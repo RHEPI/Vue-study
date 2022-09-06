@@ -3429,3 +3429,65 @@ mounted函数在Vue完成模板的解析并把初始的真实DOM元素放入页�
 ##### 3.一个简写方式：
 
 > const school = Vue.extend(options) 可简写为：const school = options
+
+```vue
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="./Js/vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        word组件
+        <word></word>
+        longword组件
+        <long-word></long-word>
+        <hr>
+        <h2>一个单词：组件名在内部定义时为小写，但是当呈现在前端后，查看Vue实例，可以看到组件名在Vue插件中被转换成了首字母大写</h2>
+        <h2>多个单词：由-连接的多个单词的组件，在前台的Vue插件中会去掉-并将每个单词首字母大写</h2>
+    </div>
+    <script>
+
+        const word = Vue.extend({
+            template:`
+                <h2>{{name}}</h2>
+            `,
+            data(){
+                return{
+                    name:'一个单词组成的组件名，可以首字母小写/首字母大写'
+                }
+            }
+        })
+
+        // kebab-case命名法：即多个单词用-连接
+        const longword = Vue.extend({
+            template:`
+                <h2>{{name}}</h2>
+            `,
+            data(){
+                return{
+                    name:'多个单词组成的组件名，可以用-连接单词/或全部单词首字母大写（需要Vue脚手架）'
+                }
+            }
+        })
+
+        const vm = new Vue({
+            el:'#root',
+            data(){
+                return{
+
+                }
+            },
+            components: {
+                word:word,
+                "long-word":longword
+            }
+        })
+    </script>
+</body>
+</html>
+```
+
+#### 1.3组件的嵌套
