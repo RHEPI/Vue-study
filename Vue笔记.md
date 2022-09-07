@@ -3429,6 +3429,8 @@ mounted函数在Vue完成模板的解析并把初始的真实DOM元素放入页�
 ##### 3.一个简写方式：
 
 > const school = Vue.extend(options) 可简写为：const school = options
+>
+> options内即data，template，method等数据。
 
 ```vue
 <!DOCTYPE html>
@@ -3446,7 +3448,7 @@ mounted函数在Vue完成模板的解析并把初始的真实DOM元素放入页�
         <long-word></long-word>
         <hr>
         <h2>一个单词：组件名在内部定义时为小写，但是当呈现在前端后，查看Vue实例，可以看到组件名在Vue插件中被转换成了首字母大写</h2>
-        <h2>多个单词：由-连接的多个单词的组件，在前台的Vue插件中会去掉-并将每个单词首字母大写</h2>
+        <h2>多个单词：在注册组件时的命名components中，由-连接的多个单词的组件，在前台的Vue插件中会去掉-并将每个单词首字母大写</h2>
     </div>
     <script>
 
@@ -3491,3 +3493,338 @@ mounted函数在Vue完成模板的解析并把初始的真实DOM元素放入页�
 ```
 
 #### 1.3组件的嵌套
+
+> 1.组件嵌套的方法即在注册的组件中使用components属性再次注册，便可达成嵌套效果，且components中的组件必须在该组件前定义好，否则会报错。
+>
+> 2.通常会使用一个app组件来包装剩余所有组件，然后在vm中注册app组件，在vm的template中写<app></app>。注意：vm中的template将会把<div id='root'></div>这个父组件替换掉。
+
+```vue
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./Js/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        
+        // 定义student组件
+        const student = Vue.extend({
+            template:`
+                <div>
+                    <h2>学生姓名：{{name}}</h2>
+                </div>
+            `,
+            data(){
+                return{
+                    name:'于永波'
+                }
+            }
+        })
+
+        // 定义组件时也可以简写形式：const school = options
+        // 此时studenttoilet是一个对象，在注册组件时将会被自动使用Vue.extend()方法注册。
+        const studenttoilet = {
+            template:`
+                <h3>{{msg}}</h3>
+            `,
+            data(){
+                return{
+                    msg:'this is a toilet, enjoy yourself !'
+                }
+            }
+        }
+
+        // 定义school组件
+        const school = Vue.extend({
+            template:`
+                <div>
+                    <h2>学校名称：{{name}}</h2>
+                    <student></student>
+                    <student-toilet></student-toilet>
+                </div>
+            `,
+            data(){
+                return{
+                    name:'河南工业大学'
+                }
+            },
+            // 在school中注册studenttoilet、student两个组件
+            components: {
+                student:student,
+                // 多个单词时可以用-连接，用''包裹名称
+                'student-toilet':studenttoilet
+            }
+        })
+
+        // 定义app组件，用于装起所有其他组件，使得vm实例只需注册一个app即可
+        const app = Vue.extend({
+            template:`
+                <school></school>
+            `,
+            components:{
+                school:school
+            }
+        })
+
+        const vm = new Vue({
+            template:`
+                <app></app>
+            `,
+            el:'#root',
+            components: {
+                app:app
+            }
+        })
+
+    </script>
+</body>
+</html>
+```
+
+JS中的构造函数使用方法：new Vuecomponent(){}
+
+#### 1.4 Vuecomponent构造函数
+
+> 个人理解：每个组件在调用Vue.extend后拥有自己独特的构造函数VueComponent(){}，在前端写上相应组件的标签后，Vue解析时会Vue帮我们执行的：new VueComponent(options)生成实例对象，简称vc。组件实质是VueComponent的实例对象。
+
+关于VueComponent：
+
+- school组件本质是一个名为VueComponent的构造函数，且不是程序员定义的，是Vue.extend生成的。
+
+- 我们只需要写<school/>或<school></school>，Vue解析时会帮我们创建school组件的实例对象，即Vue帮我们执行的：new VueComponent(options)。
+
+- 特别注意：每次调用Vue.extend，返回的都是一个全新的VueComponent！！！！
+
+- 关于this指向：
+
+> (1).组件配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【VueComponent实例对象】。
+>
+> (2).new Vue(options)配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是【Vue实例对象】。
+
+- VueComponent的实例对象，以后简称vc（也可称之为：组件实例对象）。Vue的实例对象，以后简称vm。
+- 组件是可复用的Vue实例，所以他们与`new Vue`接收相同的选项，如data、methods、及生命周期函数等。仅有的例外是像`el`这样实例所特有的选项。==>VueComponent有的Vue都有，Vue的el选项VueComponent没有。
+
+```vue
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./Js/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <school></school>
+    </div>
+    <script>
+        
+        const student = Vue.extend({
+            template:`
+                <div>
+                    <h2>学生名称：{{name}}</h2>
+                </div>
+            `,
+            data(){
+                return{
+                    name:'于永波'
+                }
+            }
+        })
+
+        const school = Vue.extend({
+            template:`
+                <div>
+                    <h2>学校名称：{{name}}</h2>
+                    <student></student>
+                    <button @click="test">点击判断</button>
+                </div>
+            `,
+            data(){
+                return{
+                    name:'河南工业大学'
+                }
+            },
+            components: {
+                student
+            },
+            methods: {
+                test(){
+                    // 测试组件的this是Vue的实例还是VueComponent的实例
+                    console.log(this)
+                }
+            }
+        })
+
+        // 输出school组件，查看school是什么：
+        // school组件本质是一个名为VueComponent的构造函数，且不是程序员定义的，是Vue.extend生成的
+        // Vue解析时会帮我们创建school组件的实例对象，即Vue帮我们执行的：new VueComponent(options)
+        console.log(school)
+
+        // 测试每次调用Vue.extend，返回的是不是一个全新的VueComponent，结果为false
+        console.log(school === student)
+
+        // 创建一个vm
+        const vm = new Vue({
+            el:'#root',
+            data(){
+                return{
+
+                }
+            },
+            components: {
+                school
+            }
+        })
+    
+    </script>
+</body>
+</html>
+```
+
+#### 1.5 JS回顾：原型
+
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主要的内置关系，JS篇</title>
+</head>
+<body>
+    <script>
+        // 定义一个构造函数
+        function Demo(){
+            this.a = 10;
+            this.b = 20;
+        }
+        // 新建一个实例对象
+        const demo = new Demo();
+
+        // 构造函数的显式原型属性
+        console.log(Demo.prototype);
+        // 实例对象的隐式原型属性
+        console.log(demo.__proto__);
+        // 二者是同一个东西，均为原型
+        console.log(Demo.prototype === demo.__proto__);
+
+        Demo.prototype.x=100;
+        // 根据原型链，demo可以在原型中找到x的值为100
+        console.log(demo.x)
+    </script>
+</body>
+</html>
+```
+
+#### 1.6一个重要的内置关系
+
+需要分辨清楚的两个名词：
+
+- 实例对象：由构造函数构造出来的，如vm就是由Vue构造函数构造的，const vm = new Vue(options)
+- 原型对象：Vue构造函数、实例对象的原型指向的对象，即原型对象。通过Vue.prototype来获取，或`vm.__proto__`来获取。
+
+Vue原型的理解：
+
+![](D:\VueStudy\Img\Vue原型对象的理解.png)
+
+**因此这个重要的内置关系就是：**
+
+`VueComponent.prototype.__proto__ === Vue.prototype`
+
+在此的VueComponent需要使用创建的实例对象来替代。
+
+```js
+school.prototype.__proto__ === Vue.prototype
+```
+
+对上图的理解：
+
+> school实例的原型对象VueComponent的原型对象 就是Vue的原型对象，
+>
+> 即VueComponent的原型对象的原型对象非Object，而是指向了Vue的原型对象。由于Vue与VueComponent中属性字段几乎一样(除了el都一样)。
+>
+> 这样的做法增强了代码的复用性。
+
+**为什么要有这个关系：**
+
+`让组件实例对象（vc）可以访问到 Vue原型上的属性、方法。`
+
+```vue
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./Js/vue.js"></script>
+    <title>一个重要的内置关系</title>
+</head>
+<body>
+    <div id="root">
+        <school></school>
+    </div>
+    
+    <script>
+        // 重要的内置关系为：VueComponent.prototype.__proto__ === Vue.prototype
+        // 测试修改Vue原型对象的值，通过VueComponent来检查是否修改
+        Vue.prototype.x=100;
+
+        // 两个名词：实例对象、原型对象
+
+        const school = Vue.extend({
+            template:`
+                <div>
+                    <h2>学校名称：{{name}}</h2>
+                    <button @click="showx">点击</button>
+                </div>
+            `,
+            data(){
+                return{
+                    name:'河南工业大学'
+                }
+            },
+            methods: {
+                showx(){
+                    console.log(this.x);
+                    console.log(this)
+                }
+            }
+        })
+
+        const vm = new Vue({
+            el:'#root',
+            data(){
+                return{
+
+                }
+            },
+            components: {
+                school
+            }
+        });
+
+        // 输出的结果为true，VueComponent需使用VueComponent创建的实例对象school来表示。(这里Vue替换成vm会输出false，不知道为什么，但是暂时没时间追究)
+        console.log(school.prototype.__proto__ === Vue.prototype)
+        // 由此可知，school实例的原型对象VueComponent的原型对象 就是Vue的原型对象，
+        // 即VueComponent的原型对象的原型对象非Object，而是指向了Vue的原型对象。由于Vue与VueComponent中属性字段几乎一样（除了el都一样）
+        // 这样的做法增强了代码的复用性。
+
+        // 在此做输出，只能输出school的构造函数VueComponent，只有在school内部才能使用被实例化后的VueComponent实例对象即school
+        console.log(school.x)   // 输出undefined
+
+    </script>
+
+</body>
+</html>
+```
+
+上述代码的控制台显示：
+
+```
+true
+undefined
+```
+
+### 2.单文件组件
+

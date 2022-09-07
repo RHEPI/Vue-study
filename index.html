@@ -2,40 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
     <script src="./Js/vue.js"></script>
+    <title>一个重要的内置关系</title>
 </head>
 <body>
     <div id="root">
-        word组件
-        <word></word>
-        longword组件
-        <long-word></long-word>
-        <hr>
-        <h2>一个单词：组件名在内部定义时为小写，但是当呈现在前端后，查看Vue实例，可以看到组件名在Vue插件中被转换成了首字母大写</h2>
-        <h2>多个单词：由-连接的多个单词的组件，在前台的Vue插件中会去掉-并将每个单词首字母大写</h2>
+        <school></school>
     </div>
+    
     <script>
+        // 重要的内置关系为：VueComponent.prototype.__proto__ === Vue.prototype
+        // 测试修改Vue原型对象的值，通过VueComponent来检查是否修改
+        Vue.prototype.x=100;
 
-        const word = Vue.extend({
+        // 两个名词：实例对象、原型对象
+
+        const school = Vue.extend({
             template:`
-                <h2>{{name}}</h2>
+                <div>
+                    <h2>学校名称：{{name}}</h2>
+                    <button @click="showx">点击</button>
+                </div>
             `,
             data(){
                 return{
-                    name:'一个单词组成的组件名，可以首字母小写/首字母大写'
+                    name:'河南工业大学'
                 }
-            }
-        })
-
-        // kebab-case命名法：即多个单词用-连接
-        const longword = Vue.extend({
-            template:`
-                <h2>{{name}}</h2>
-            `,
-            data(){
-                return{
-                    name:'多个单词组成的组件名，可以用-连接单词/或全部单词首字母大写（需要Vue脚手架）'
+            },
+            methods: {
+                showx(){
+                    console.log(this.x);
+                    console.log(this)
                 }
             }
         })
@@ -48,10 +45,20 @@
                 }
             },
             components: {
-                word:word,
-                "long-word":longword
+                school
             }
-        })
+        });
+
+        // 输出的结果为true，VueComponent需使用VueComponent创建的实例对象school来表示。(这里Vue替换成vm会输出false，不知道为什么，但是暂时没时间追究)
+        console.log(school.prototype.__proto__ === Vue.prototype)
+        // 由此可知，school实例的原型对象VueComponent的原型对象 就是Vue的原型对象，
+        // 即VueComponent的原型对象的原型对象非Object，而是指向了Vue的原型对象。由于Vue与VueComponent中属性字段几乎一样（除了el都一样）
+        // 这样的做法增强了代码的复用性。
+
+        // 在此做输出，只能输出school的构造函数VueComponent，只有在school内部才能使用被实例化后的VueComponent实例对象即school
+        console.log(school.x)   // 输出undefined
+
     </script>
+
 </body>
 </html>
