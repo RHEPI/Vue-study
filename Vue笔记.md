@@ -58,12 +58,87 @@
 - [x] 52
 - [x] 53
 - [x] 54
-- [ ] 55
-- [ ] 56
-- [ ] 57
-- [ ] 58
-- [ ] 59
-- [ ] 60
+- [x] 55
+- [x] 56
+- [x] 57
+- [x] 58
+- [x] 59
+- [x] 60
+- [x] 61
+- [x] 62
+- [x] 63
+- [x] 64
+- [x] 65
+- [x] 66
+- [x] 67
+- [x] 68
+- [x] 69
+- [x] 70
+- [x] 71
+- [x] 72
+- [ ] 73
+- [ ] 74
+- [ ] 75
+- [ ] 76
+- [ ] 77
+- [ ] 78
+- [ ] 79
+- [ ] 80
+- [ ] 81
+- [ ] 82
+- [ ] 83
+- [ ] 84
+- [ ] 85
+- [ ] 86
+- [ ] 87
+- [ ] 88
+- [ ] 89
+- [ ] 90
+- [ ] 91
+- [ ] 92
+- [ ] 93
+- [ ] 94
+- [ ] 95
+- [ ] 96
+- [ ] 97
+- [ ] 98
+- [ ] 99
+- [ ] 100
+- [ ] 101
+- [ ] 102
+- [ ] 103
+- [ ] 104
+- [ ] 105
+- [ ] 106
+- [ ] 107
+- [ ] 108
+- [ ] 109
+- [ ] 110
+- [ ] 111
+- [ ] 112
+- [ ] 113
+- [ ] 114
+- [ ] 115
+- [ ] 116
+- [ ] 117
+- [ ] 118
+- [ ] 119
+- [ ] 120
+- [ ] 121
+- [ ] 122
+- [ ] 123
+- [ ] 124
+- [ ] 125
+- [ ] 126
+- [ ] 127
+- [ ] 128
+- [ ] 129
+- [ ] 130
+- [ ] 131
+- [ ] 132
+- [ ] 133
+- [ ] 134
+- [ ] 135
 
 ### 1.Hello小案例
 
@@ -3828,3 +3903,1005 @@ undefined
 
 ### 2.单文件组件
 
+组件的功能：实现局部功能的代码和资源的集合。
+
+组件命名推荐：一个单词时首字母大写，多个单词时每个单词首字母均大写。
+
+ES6模块化暴露分类：1.分别暴露、2.统一暴露、3.默认暴露
+
+```javascript
+// 1.分别暴露：.vue文件中定义组件后，在前面写export
+export const school = Vue.extend({
+    name:'School',
+    data(){
+        return{
+            name:'河南工业大学',
+            address:'河南省郑州市高新区'
+        }
+    }
+})
+```
+
+```javascript
+// 2.统一暴露，在组件注册后的最后一行写export
+const school = Vue.extend({
+    name:'School',
+    data(){
+        return{
+            name:'河南工业大学',
+            address:'河南省郑州市高新区'
+        }
+    }
+})
+export {school}
+```
+
+默认暴露时，import 后面只需要写起的组件名即可，不需要写{}
+
+```js
+// 3.默认暴露，一般写法，此时的名字计时school
+const school = Vue.extend({
+    name:'School',
+    data(){
+        return{
+            name:'河南工业大学',
+            address:'河南省郑州市高新区'
+        }
+    }
+})
+export default school
+```
+
+```js
+// 3.默认暴露，简便写法，在这里不适应Vue.extend，直接export default{}，组件名在{name:''}里写。
+export default {
+    // name值为外面组件import时所输入的名字，符合kebab-case命名规则，推荐写法为:
+    // 一个单词组成的则大写首字母，多个字母组成的每个单词首字母大写。
+    name:'School',
+    data(){
+        return{
+            name:'河南工业大学',
+            address:'河南省郑州市高新区'
+        }
+    }
+}
+```
+
+#### 2.1单文件组件的结构构成：
+
+App.vue是集合别的组件的一个vue组件
+
+```mermaid
+graph TD;
+	index.html-->main.js
+	main.js-->App.vue
+	App.vue-->School.vue
+	App.vue-->Student.vue
+	
+```
+
+##### index.html:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>练习一下单文件组件的语法</title>
+</head>
+<body>
+    <div id="root">
+
+    </div>
+    <!-- 引入注册App组件的main.js，并将App.js中的template替换掉了id=root的div标签 -->
+    <script src="./main.js"></script>
+    <script src="./Js/vue.js"></script>
+</body>
+</html>
+```
+
+##### main.js:
+
+```js
+import App from './App'
+
+new Vue({
+    el:'#root',
+    template:`
+        <App></App>
+    `,
+    // 将汇总的App组件在此注册,此处的main.js又被称作入口函数，在此新建了Vue实例并绑定到了index.html中的div标签中
+    components: {
+        App
+    }
+})
+```
+
+##### App.vue:
+
+```vue
+<template>
+  <div>
+    <!-- 使用两个组件，在Vue中也需要使用div包裹着 -->
+    <School></School>
+    <Student></Student>
+  </div>
+</template>
+
+<script>
+    // 1.引入School、Student组件
+    import School from './School'
+    import Student from './Student'
+    export default {
+        name:'App',
+        // 2.注册两个组件
+        components: {
+            School,
+            Student
+        }
+    }
+</script>
+```
+
+##### School.vue:
+
+```vue
+<template>
+  <div class="demo">
+    <h2>学校名称：{{name}}</h2>
+    <h2>学校地址：{{address}}</h2>
+  </div>
+</template>
+
+<script>
+export default {
+    // name值为外面组件import时所输入的名字，符合kebab-case命名规则，推荐写法为:
+    // 一个单词组成的则大写首字母，多个字母组成的每个单词首字母大写。
+    name:'School',
+    data(){
+        return{
+            name:'河南工业大学',
+            address:'河南省郑州市高新区'
+        }
+    }
+}
+</script>
+
+<style>
+    .demo{
+        background-color: skyblue;
+    }
+</style>
+```
+
+##### Student.vue:
+
+```vue
+<template>
+  <div class="demo">
+    <h2>学生姓名：{{name}}</h2>
+    <h2>学生年龄：{{age}}</h2>
+  </div>
+</template>
+
+<script>
+export default {
+    name:'Student',
+    data(){
+        return{
+            name:'于永波',
+            age:22
+        }
+    }
+}
+</script>
+
+<style>
+    .demo{
+        background-color: orange;
+    }
+</style>
+```
+
+## Vue脚手架
+
+### 1.初始化脚手架
+
+初始化之前确保自己已经安装了node.js。
+
+1. 全局安装@vue/cli，打开cmd，输入`npm install -g @vue/cli`
+2. 切换到你要创建项目的目录，然后使用命令创建项目`vue create xxxx`
+3. 切换到创建好项目的目录，启动项目`npm run serve`
+4. 若下载速度慢，可以切换淘宝镜像淘宝镜像。也是打开cmd输入即可。
+5. 淘宝镜像：`npm config set registry https://registry.npm.taobao.org`
+
+### 2.分析脚手架结构
+
+```
+	├── node_modules 
+	├── public
+	│   ├── favicon.ico: 页签图标
+	│   └── index.html: 主页面
+	├── src
+	│   ├── assets: 存放静态资源
+	│   │   └── logo.png
+	│   │── component: 存放组件
+	│   │   └── HelloWorld.vue
+	│   │── App.vue: 汇总所有组件
+	│   │── main.js: 入口文件
+	├── .gitignore: git版本管制忽略的配置
+	├── babel.config.js: babel的配置文件
+	├── package.json: 应用包配置文件 
+	├── README.md: 应用描述文件
+	├── package-lock.json：包版本控制文件
+```
+
+该脚手架项目修改过的文件：
+
+**./components/School.vue**
+
+```vue
+<template>
+  <div class="school">
+    <h2>高校名称：{{name}}</h2>
+    <h2>高校地址：{{address}}</h2>
+  </div>
+</template>
+
+<script>
+    export default {
+        name:'School',
+        data(){
+            return{
+                name:'河南工业大学',
+                address:'河南省郑州市高新区'
+            }
+        }
+    }
+</script>
+
+<style>
+    .school{
+        background-color: skyblue;
+    }
+</style>
+```
+
+**./components/Student.vue**
+
+```
+<template>
+  <div>
+    <h2>学生姓名：{{name}}</h2>
+    <h2>学生学号：{{age}}</h2>
+  </div>
+</template>
+
+<script>
+    export default {
+        name:'Student',
+        data(){
+            return{
+                name:'于永波',
+                age:18
+            }
+        }
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+**App.vue**
+
+```vue
+<template>
+  <div id="app">
+    <img alt="Vue logo" src="./assets/logo.png">
+    <School></School>
+    <hr>
+    <Student></Student>
+  </div>
+</template>
+
+<script>
+import School from './components/School.vue'
+import Student from './components/Student.vue'
+
+export default {
+  name: 'App',
+  components: {
+    School,
+    Student
+}
+}
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+```
+
+**main.js**
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+
+Vue.config.productionTip = false
+
+// 新建一个Vue实例，将App.vue绑定到id为app的容器中
+new Vue({
+  render: h => h(App),
+}).$mount('#app')
+
+```
+
+### 3.render函数
+
+关于app.vue中的一些知识点：
+
+在app中引入的vue默认是精简过的，在modules的vue文件夹中的package.json中可以看到`"module": "dist/vue.runtime.esm.js",`即在app中使用的vue为`vue.runtime.esm.js`,此vue不能解析template。
+
+此时有两种选择:
+
+1.改引用为vue/dist/vue.js即完整的vue然后按原来的方法配置Vue实例对象。
+
+2.使用render函数进行配置。
+
+```javascript
+import Vue from 'vue'
+import App from './App.vue'
+
+Vue.config.productionTip = false
+
+// 新建一个Vue实例，将App.vue绑定到id为app的容器中
+new Vue({
+  // 在此引入的vue是modules中vue/dist/vue.runtime.esm.js的vue.js是一个精简过的vue
+  el:'#app',
+  // render中的参数为一个函数，在函数中可以传参数，在此为添加一个内容为"你好啊"的h1元素，并添加到app的容器中
+  render(creatElement){
+    // creatElement为一个函数，用于创建具体元素
+    return creatElement('h1','你好啊')
+  }
+  // render: h => h(App),
+})
+// .$mount('#app')
+
+```
+
+> render的简化过程：
+>
+> 普通函数形式：
+>
+> ```js
+> render(creatElement){
+>     return creatElement('h1','你好啊')
+> }
+> ```
+>
+> 箭头函数形式：
+>
+> ```js
+> render:(creatElement)=>{
+>     return creatElement('h1','你好啊')
+> }
+> ```
+>
+> 此时只要一个参数，因此参数外的括号简写：
+>
+> ```js
+> render: creatElement =>{
+>     return creatElement('h1','你好啊')
+> }
+> ```
+>
+> 将return精简上去
+>
+> ```js
+> render: creatElement => creatElement('h1','你好啊')
+> ```
+>
+> 将参数名改的更加精简
+>
+> ```js
+> render: h => h('h1','你好啊')
+> // 在此'h1'表示一个h1标签，''引号内表示标签，但是也可直接传递一个组件如下的App
+> ```
+>
+> 此时便与下面正规写法几乎无异。
+>
+> ```js
+> render: h => h(App)
+> ```
+
+Vue.js包括核心、模板解析器。在App.vue中使用vue时，import为JS模块化的语法，因此使用的是vue文件夹下package.json中指定的vue.runtime.esm.js，该vue精简了模板解析器，因此template在App.vue的vm中无法使用，需要使用render函数，一般一个项目只有一个App.vue因此render只用一遍。
+
+**不同版本Vue的区别：**
+
+- **vue.js与vue.runtime.xxx.js的区别：**
+
+> ​        (1).vue.js是完整版的Vue，包含：核心功能+模板解析器。
+>
+> ​        (2).vue.runtime.xxx.js是运行版的Vue，只包含：核心功能；没有模板解析器。
+
+- **因为vue.runtime.xxx.js没有模板解析器，所以不能使用template配置项，需要使用**
+
+> ​      render函数接收到的createElement函数去指定具体内容。
+
+### 4.修改默认配置
+
+- 使用vue inspect > output.js可以查看到Vue脚手架的默认配置。
+- 使用vue.config.js可以对脚手架进行个性化定制，详情见：https://cli.vuejs.org/zh
+
+在package.json同级目录下新建vue.config.js文件，在此配置便可修改默认配置，可修改项参考https://cli.vuejs.org/zh/config/，脚手架会把vue.config.js中的文件与webpack中的配置文件合并。
+
+如pages，修改项目的入口文件（下面这些都写在vue.config.js中）
+
+```js
+module.exports = {
+  pages: {
+    index: {
+      // page 的入口
+      entry: 'src/index/main.js'
+  }
+}
+```
+
+lintOnSave，保存时自动检查语法。
+
+```js
+//module.exports用的是common标准非es6标准，这些配置项会直接与webpack中的配置合并。
+module.exports = {
+  pages: {
+    index: {
+      // page 的入口
+      entry: 'src/index/main.js'
+  },
+  lintOnsave:false
+}
+
+```
+
+### 5.ref属性
+
+1. 作用：被用来给元素或子组件注册引用信息（id的替代者）
+2. 应用场景：应用在html标签上获取的是真实DOM元素，应用在组件标签上是组件实例对象（vc）
+3. 使用方式：
+    1. 打标识：```<h1 ref="xxx">.....</h1>``` 或 ```<School ref="xxx"></School>```
+    2. 获取：```this.$refs.xxx```
+
+**App.vue内容：**
+
+```vue
+<template>
+    <div>
+        <h2 ref="title" id="title">欢迎来到Vue</h2>
+        <Student ref="Student" id="Student"></Student>
+        <School ref="School"></School>
+        <button @click="showinfo">点我显示组件信息</button>
+    </div>
+</template>
+
+<script>
+    import Student from './components/Student.vue';
+    import School from './components/School.vue';
+    export default {
+        name:'App',
+        components:{
+            Student,
+            School
+        },
+        methods:{
+            showinfo(){
+                // 传统方法：id+getElementById Vue方法：ref+this.$refs.ref值
+
+                // 通过ref标记，后通过this.$refs便可获得该节点
+                console.log(this.$refs.title)   //获取真实DOM
+                console.log(this.$refs.School)  //获取School组件的实例对象
+                console.log(this.$refs.Student) //获取Student组件的实例对象()
+                
+                // 使用JS原生获取DOM的方法
+                console.log(document.getElementById('title'))   //使用JS原生获取Html本身存在的DOM时并无差异
+                console.log(document.getElementById('Student')) //但是获取自定义组件时便会存在一些差异，获取的并非Student的组件实例对象
+            }
+        }
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+### 6.props配置
+
+功能：让组件接收外部传过来的数据
+
+传递数据：`<Student name="于永波" sex="男" :age="18"></Student>`即在父组件的标签中写入即可
+
+接收数据：三种接收形式
+
+> 1.简单声明接收
+>
+> ```js
+> props:['name','age','sex'],
+> ```
+>
+> 2.接收的同时对数据进行：类型限制
+>
+> ```js
+>         props:{
+>             name:String,
+>             age:Number,
+>             sex:String
+>         },
+> ```
+>
+> 3.接收的同时对数据进行：类型限制、默认值限制、必要性限制
+>
+> ```js
+>         props:{
+>             name:{
+>                 type:String,
+>                 // 是否为必须
+>                 required:true
+>             },
+>             age:{
+>                 type:Number,
+>                 // 设定默认值
+>                 default:99
+>             },
+>             sex:{
+>                 tpe:String,
+>                 default:'男'
+>             }
+>         },
+> ```
+
+props中的数据优先于data被添加到vuecomponents中，且props中定义的数据为只读属性，因此若需要在读入数据后改变数据，则需要再创建一个变量，接收props中的变量。
+
+**案例代码：**
+
+Student.vue:
+
+```vue
+<template>
+    <div class="stu">
+        <h1>{{msg}}</h1>
+        <h2>学生姓名：{{name}}</h2>
+        <h2>学生年龄：{{myAge}}</h2>
+        <h2>学生性别：{{sex}}</h2>
+        <button @click="grow">年龄+1</button>
+    </div>
+</template>
+
+<script>
+    export default {
+        name:'Student',
+        data(){
+            return{
+                msg:'这是一个关于Vue中props属性的练习',
+                // 由于props中的age是只读属性，因此这里专门创建一个变量接收数据
+                myAge:this.age
+            }
+        },
+        // 简单声明接收：
+        // props:['name','age','sex'],
+
+        // 接收的同时对数据进行：类型限制
+        // props:{
+        //     name:String,
+        //     age:Number,
+        //     sex:String
+        // },
+
+        // 接收的同时对数据进行：类型限制、默认值限制、必要性限制
+        props:{
+            name:{
+                type:String,
+                // 是否为必须
+                required:true
+            },
+            age:{
+                type:Number,
+                // 设定默认值
+                default:99
+            },
+            sex:{
+                tpe:String,
+                default:'男'
+            }
+        },
+
+        methods:{
+            grow(){
+                this.myAge++
+            }
+        }
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+App.vue:
+
+```vue
+<template>
+    <div>
+        <!-- 若需要传一些数值数据，使用:即v-bind，此时""内的值为表达式，便可传递过去 -->
+        <Student name="于永波" sex="男" :age="18"></Student>
+    </div>
+</template>
+
+<script>
+    import Student from './components/Student.vue';
+    export default {
+        name:'App',
+        components:{
+            Student
+        }
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+### 7.mixin混入(用于共享一些功能)
+
+ **功能：**可以把多个组件共用的配置提取成一个混入对象
+
+**使用方式：**
+
+​	第一步定义混合：
+
+```js
+{
+    data(){....},
+    methods:{....}
+    ....
+}
+```
+
+​	第二步使用混入：
+
+> 全局混入：`Vue.mixin(xxx)`
+>
+> 局部混入：`mixins:['xxx']`
+
+**个人理解：**
+
+> 混入即两个组件共享一个配置，可以是methods，也可以是data，也可以是生命周期函数等。
+>
+> 若组件中存在minin相同的配置项，则以组件内的为主，即就近原则（data数据、methods方法等）。
+>
+> 但是钩子函数mounted配置项会都执行，先执行mixin的，后执行组件内的。
+
+例子：School与Student组件共享一些数据一些方法
+
+#### **1:局部混入**
+
+定义待混入的数据，定义为js文件，在此为mixin.js
+
+```js
+// 分别暴露，在引入时需要加{}
+export const hunhe = {
+    methods:{
+        showInfo(){
+            alert(this.name);
+        }
+    }
+}
+export const hunhe2 = {
+    data(){
+        return{
+            x:1,
+            y:2
+        }
+    }
+}
+```
+
+后在Student组件及School组件中的VueComponent中添加minxin配置项并混入mixin.js
+
+```vue
+<template>
+    <div class="stu">
+        <h1>{{msg}}</h1>
+        <h2 @click="showInfo">学生姓名：{{name}}</h2>
+        <h2>学生年龄：{{age}}</h2>
+        <h2>学生的x：{{x}}学生的y：{{y}}</h2>
+    </div>
+</template>
+
+<script>
+    import {hunhe,hunhe2} from '../mixin'
+
+    export default {
+        name:'Student',
+        data(){
+            return{
+                msg:'这是一个关于Vue中props属性的练习',
+                // 由于props中的age是只读属性，因此这里专门创建一个变量接收数据
+                age:20,
+                name:'皮皮波'
+            }
+        },
+        mixins:[hunhe]
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+```vue
+<template>
+  <div>
+    <h2 @click="showInfo">学校名称：{{name}}</h2>
+    <h2>学校地址：{{address}}</h2>
+    <h2>学校的x：{{x}}学校的y：{{y}}</h2>
+  </div>
+</template>
+
+<script>
+    import {hunhe,hunhe2} from '../mixin'
+
+    export default {
+        name:'School',
+        data(){
+            return{
+                name:'河南工业大学',
+                address:'河南省郑州市高新区'
+            }
+        },
+        mixins:[hunhe]
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+#### **2.全局混入**
+
+在main.js中进行导入，此时main.js中的vm以及剩余3个组件的vc都会进行一次混合。即在main.js进行全局混合的话，每个vm及vc都会进行混合。
+
+```js
+// 导入vue及App组件
+import Vue from 'vue'
+import App from './App.vue'
+
+import {hunhe,hunhe2} from './mixin'
+Vue.mixin(hunhe)
+Vue.mixin(hunhe2)
+new Vue({
+    el:'#app',
+    render: h =>h(App)
+})
+```
+
+### 8.插件
+
+首先应用插件，后创建vm。
+
+#### **功能：**
+
+用于增强Vue
+
+#### **本质：**
+
+包含install方法的一个对象，install的第一个参数是Vue，第二个以后的参数是插件使用者传递的数据。
+
+#### **定义插件：**
+
+```js
+// 此时import时的名字自己定义
+export default {
+	install(Vue,options){
+		 // 1. 添加全局过滤器
+        Vue.filter(....)
+    
+        // 2. 添加全局指令
+        Vue.directive(....)
+    
+        // 3. 配置全局混入(合)
+        Vue.mixin(....)
+    
+        // 4. 添加实例方法
+        Vue.prototype.$myMethod = function () {...}
+        Vue.prototype.$myProperty = xxxx
+	}
+}
+```
+
+#### **使用插件：**
+
+在main.js中使用插件
+
+```js
+Vue.use()
+```
+
+#### 例子：
+
+plugin.js：
+
+```js
+export default{
+    // 插件就是由定义的install函数实现的
+    install(Vue){
+        // 在插件中定义过滤器
+        Vue.filter("mySlice",function(value){
+            return value.slice(0,4)
+        })
+
+        // 定义全局指令
+        Vue.directive('fbind',{
+            // 指令与元素绑定成功时
+            bind(element,binding){
+                // 将值绑定给DOM元素
+                element.value=binding.value;
+            },
+
+            // 元素被插入到页面时
+            inserted(element,binding){
+                element.focus();
+            },
+
+            // 指令所在的模板被重新解析时
+            update(element,binding){
+                element.value=binding.value;
+            }
+        })
+
+        // 定义混入,这里不在外面定义了，直接在mixin函数内定义
+        Vue.mixin({
+            data(){
+                return{
+                    x:10,
+                    y:100
+                }
+            }
+        })
+
+        // 给Vue原型添加一个方法
+        Vue.prototype.hello = ()=>{
+            // 在此定义的方法vm和vc都能使用到
+            alert('hello');
+        }
+    }
+}
+```
+
+在main.js中引入并使用：
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+
+// 注册一个插件
+import plugin from './plugin'
+// 使用一个插件
+Vue.use(plugin)
+new Vue({
+    el:'#app',
+    render: h =>h(App)
+})
+```
+
+### 9.scoped样式
+
+一些小补充：
+
+终端输入`npm view webpack versions`可查看webpack的所有版本。
+
+终端输入`npm view less-loader versions`可查看less-loader的所有版本。
+
+```css
+<style lang="less">
+    // lang="less"指定此css的编写方式为less，需要在vue-cli中安装匹配版本的less-loader，
+	// 使用npm i less-loader@版本 来安装
+</style>
+```
+
+在vue-cli中，每个组件的style最终会被汇总到一起，如果不使用scoped标记为局部style，可能会导致组件中的样式类名或id名重名，导致样式覆盖。因此常常在App.vue之外的其他子组件中使用scoped标记，防止样式覆盖。
+
+通过F12检查控制台会发现，scoped为每个组件内的样式设置了唯一的属性，css通过`类/id[属性]`来选择相应的元素并渲染效果。
+
+**小例子：**
+
+School.vue中的template和style：
+
+```html
+<template>
+  <div>
+    <!-- 局部样式 -->
+    <h2 class="demo">学校名称：{{name}}</h2>
+    <!-- App.vue中设置的非scoped样式，可以理解为全局样式 -->
+    <h2 class="fncolor">学校地址：{{address}}</h2>
+  </div>
+</template>
+<style scoped>
+	/* School中的局部样式 */
+  .demo{
+    background-color: skyblue;
+  }
+</style>
+```
+
+Student.vue中的template和style：
+
+```html
+<template>
+    <div class="stu">
+        <h1>{{msg}}</h1>
+        <!-- 局部样式 -->
+        <h2 class="demo">学生姓名：{{name}}</h2>
+        <!-- App.vue中设置的非scoped样式，可以理解为全局样式 -->
+        <h2 class="fncolor">学生年龄：{{age}}</h2>
+    </div>
+</template>
+
+<script>
+    export default {
+        name:'Student',
+        data(){
+            return{
+                msg:'这是一个关于Vue中props属性的练习',
+                age:20,
+                name:'皮皮波'
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    /* Student中的局部样式 */
+    .demo{
+        background-color: yellow;
+    }
+</style>
+```
+
+App.vue中的无scoped的样式，可以理解为全局样式：
+
+```html
+<style>
+    .fncolor{
+        color:red
+    }
+</style>
+```
+
+此时School和Student组件中的字体都会变红。
+
+## TodoList案例
+
+### 1.组件化的编码流程
+
+Ⅰ.拆分静态组件：组件要按照功能点拆分，命名不要与html元素冲突。
+
+Ⅱ.实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用：
+
+​		1).一个组件在用：放在组件自身即可。
+
+​		2). 一些组件在用：放在他们共同的父组件上（<span style="color:red">状态提升</span>）。
+
+Ⅲ.实现交互：从绑定事件开始。
